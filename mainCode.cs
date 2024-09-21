@@ -1,7 +1,10 @@
 using System.Runtime.CompilerServices;
+using Microsoft.VisualBasic.FileIO;
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8604
+
+
 //namespace CSharpTest;
 namespace CSharpTest;
 
@@ -15,7 +18,7 @@ class mainCode{
         string word=wordList[wordIndex];
         return word;
     }
-    static Array Arraycheck(string answer,string usrGuess){
+    static int[] Arraycheck(string answer,string usrGuess){
         List<Int32>positions=new List<Int32>();
         positions.Add(-1);
         for(int i=0;i<answer.Length;i++)
@@ -68,30 +71,36 @@ class mainCode{
             answer=randomWord();
         }
 
+        char []WrongAnswers=new char [10];
         int NumOfWrongs=0;
         char []userResult=new char[50];
         string userInput="a";
+        bool gameEnds=false;    //variable to show if game ends
+        int[] temp;             //to hold results from ArrayCheck
+
         //loop to fill up the answer with underscores ('_')
         for (int i=0;i<answer.Length;i++){
             userResult[i]='_';
         }
 
         Console.WriteLine("Your word is:");
+        Console.WriteLine(userResult);
 
-        while(!CheckIfDead(NumOfWrongs)&&!CheckIfWin(answer,userResult.ToString())){
+        
+        while(!gameEnds){
             Console.WriteLine("Please enter your guess:");
-            try{
+            userInput = Console.ReadLine();
 
-                userInput =Console.ReadLine();
-            }
-            catch(Exception e){
-                Console.WriteLine(e);
-            }
 
-            if(userInput.Length==1){
-
+            if(userInput.Length==1){    //usual user guess -> one letter
+                temp=Arraycheck(answer,userInput);
+                if(temp[0]==-1){
+                    NumOfWrongs++;
+                    Console.WriteLine("The ");
+                }
             }
             fillTheArray(System.Convert.ToString(userResult),userInput,answer);
         }
     }
+    
 }
