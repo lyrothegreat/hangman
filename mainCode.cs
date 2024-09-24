@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-using Microsoft.VisualBasic.FileIO;
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8604
@@ -42,15 +40,26 @@ class mainCode{
 
 }
     static bool CheckIfDead(int NumOfWrongs){
+        if(NumOfWrongs==9){
+            return true;
+        }
         return false;
     }
     static bool CheckIfWin (string answer,string userCurrent){
+        if(answer.Equals(userCurrent)){
+            return true;
+        }
         return false;
     }
-    static bool fillTheArray(string userResult, string userInput, string answer){
+    static bool IsInArray(string[] strings,string target){
+        foreach(string str in strings){
+            if(str==target){
+                return true;
+            }
+        }
         return false;
     }
-    static void Main2(string[] args)
+    static void Main(string[] args)
     {
         string []hangman=new string [10];
         hangman[9]="\n--------------------\n|\t\t|\n|\t\t0\n|\t       /|\\ \n|\t       / \\\n";
@@ -67,14 +76,18 @@ class mainCode{
         Console.WriteLine("Welcome to the game of hangman!");
 
         string answer=randomWord();
-        while(answer.Length<3){ //get an answer larger than 3 of length
+        while(answer.Length<4){ //get an answer larger than 3 of length
             answer=randomWord();
         }
 
-        char []WrongAnswers=new char [10];
+        string []WrongAnswers=new string [10];
+        string[] userInputs=new string[50];
+        int InputsCounter=0;
+        int WrongAnswersCounter=0;
+
         int NumOfWrongs=0;
-        char []userResult=new char[50];
-        string userInput="a";
+        char []userResult=new char[answer.Length];
+        string userInput;
         bool gameEnds=false;    //variable to show if game ends
         int[] temp;             //to hold results from ArrayCheck
 
@@ -83,23 +96,107 @@ class mainCode{
             userResult[i]='_';
         }
 
-        Console.WriteLine("Your word is:");
+        Console.Write("Your word is:");
         Console.WriteLine(userResult);
-
         
         while(!gameEnds){
-            Console.WriteLine("Please enter your guess:");
+            Console.Write("Your current word is:");
+            Console.WriteLine(userResult);
+            Console.Write("Please enter your guess:");
             userInput = Console.ReadLine();
+            Console.WriteLine();
 
+            if (userInput== null){
+                Console.WriteLine("Please enter something");
+                continue;
+            }
+            //The user inputted the word/letter already
+            if(IsInArray(userInputs,userInput)){
+                Console.WriteLine("Please enter a new value instead of inputting the same");
+                Console.WriteLine("You have already inputted:");
+                for(int i=0;i<InputsCounter;i++){
+                    Console.WriteLine(userInputs[i]);
+                }
+                Console.WriteLine();
+                continue;
+            }
+
+            userInputs[InputsCounter]=userInput;
+            InputsCounter++;
+
+
+            //output all the wrong answers every looop
+            Console.WriteLine("Your wrong answers are listed below:");
+            for (int i=0;i<WrongAnswersCounter;i++){
+                Console.WriteLine(WrongAnswers[i]);
+            }
+            Console.WriteLine();
 
             if(userInput.Length==1){    //usual user guess -> one letter
+                
                 temp=Arraycheck(answer,userInput);
-                if(temp[0]==-1){
+                if(temp[0]==-1){    //guess is wrong
+                    WrongAnswers[NumOfWrongs]=userInput;
+
                     NumOfWrongs++;
-                    Console.WriteLine("The ");
+                    
+                    Console.WriteLine("The guess is wrong!");
+                    Console.Write("You are currently in your number ");
+                    Console.Write(NumOfWrongs);
+                    Console.Write(" mistake, you have ");
+                    Console.Write(9-NumOfWrongs);
+                    Console.WriteLine(" mistakes left");
+                    Console.Write("Hangman is attached below:");
+                    Console.Write(hangman[NumOfWrongs]);
+
+                    WrongAnswers[WrongAnswersCounter]=userInput;
+                    WrongAnswersCounter++;
+                   
+                }else{  //guess letter is right
+                    for (int i=0;i<temp.Length;i++){        //change the '_' into a word
+                        userResult[temp[i]]=System.Convert.ToChar(userInput);
+                    }
+
+                    Console.WriteLine("Your guess is right!");
+                    Console.Write("You are currently in your number ");
+                    Console.Write(NumOfWrongs);
+                    Console.Write(" mistake, you have ");
+                    Console.Write(9-NumOfWrongs);
+                    Console.WriteLine(" mistakes left");
+
+                    if(CheckIfWin(answer,new string(userResult))){ //check if uswer outright won
+                        gameEnds=true;
+                        Console.WriteLine("Your guess is right!");
+                        Console.Write("You outright won, and you saved the men:\n");
+                        Console.WriteLine(hangman[NumOfWrongs]);
+                    }
+                }
+            }else{//whole word guess
+                if(CheckIfWin(answer,new string(userInput))){ //check if uswer outright won
+                    Console.WriteLine("Your guess is right!");
+                    Console.WriteLine("You outright won, and you saved the men:\n",hangman[NumOfWrongs]);
+                    gameEnds=true;
+                }else{  
+                    //whole word guess is wrong
+                    NumOfWrongs++;
+                    Console.WriteLine("The guess is wrong!");
+                    Console.Write("You are currently in your number ");
+                    Console.Write(NumOfWrongs);
+                    Console.Write(" mistake, you have ");
+                    Console.Write(9-NumOfWrongs);
+                    Console.WriteLine(" mistakes left");
+                    Console.Write("Hangman is attached below:");
+                    Console.Write(hangman[NumOfWrongs]);
                 }
             }
-            fillTheArray(System.Convert.ToString(userResult),userInput,answer);
+            if(CheckIfDead(NumOfWrongs)){
+                gameEnds=true;
+                Console.WriteLine("You lost!");
+                Console.Write("The word is ");
+                Console.WriteLine(answer);
+            }
+            Console.WriteLine("");
+            
         }
     }
     
