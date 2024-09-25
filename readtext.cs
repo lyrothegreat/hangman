@@ -1,4 +1,4 @@
-﻿namespace read_text;
+namespace read_text;
 
 class Program
 {
@@ -24,9 +24,22 @@ class Program
         string[] words = wordsList.ToArray();
         return words;
     }
+    
+    static Array ReadWordByLine()
+    {
+        string path = @"C:\\Users\\wzsgp\\RiderProjects\\ConsoleApplication1\\read text\\words.txt";
+        List<string> wordsList = new List<string>();
+        foreach (var i in File.ReadLines(path))
+        {
+            wordsList.Add(i);
+        }
+        string[] words = wordsList.ToArray();
+        return words;
+    }
+    
     static void Main(string[] args)
     {
-        foreach(var i in ReadWord())
+        foreach(var i in ReadWordByLine())
         {
             Console.WriteLine(i);
         }
