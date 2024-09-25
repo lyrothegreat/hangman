@@ -100,6 +100,22 @@ class mainCode{
         }
         return false;
     }
+    static void losingScreen(){
+        Type type = typeof(ConsoleColor);
+        
+        int a=1;
+
+        while (a==1){
+            for(int i=0;i<15;i++){
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            
+            foreach (var name in Enum.GetNames(type)){
+                Console.BackgroundColor = (ConsoleColor)Enum.Parse(type, name);
+                Console.Write("ha");
+            }
+        }
+    }
     static void Main(string[] args) // can we remove args?
         
     {
@@ -236,6 +252,7 @@ class mainCode{
                 Console.WriteLine("You lost!");
                 Console.Write("The word is ");
                 Console.WriteLine(answer);
+                losingScreen();
             }
             Console.WriteLine("");
             //output all the wrong answers every loop
