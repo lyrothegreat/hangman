@@ -110,6 +110,14 @@ class mainCode{
                 Console.WriteLine("Please enter something");
                 continue;
             }
+
+            // the user inputted multiple letters that are not the word
+            if (userInput.Length > 1 && userInput.Length != answer.Length)
+            {
+                Console.WriteLine("Please enter a valid guess:");
+                continue;
+            }
+            
             //The user inputted the word/letter already
             if(IsInArray(userInputs,userInput)){
                 Console.WriteLine("Please enter a new value instead of inputting the same");
@@ -125,7 +133,7 @@ class mainCode{
             InputsCounter++;
 
 
-            //output all the wrong answers every looop
+            //output all the wrong answers every loop
             Console.WriteLine("Your wrong answers are listed below:");
             for (int i=0;i<WrongAnswersCounter;i++){
                 Console.WriteLine(WrongAnswers[i]);
@@ -164,7 +172,7 @@ class mainCode{
                     Console.Write(9-NumOfWrongs);
                     Console.WriteLine(" mistakes left");
 
-                    if(CheckIfWin(answer,new string(userResult))){ //check if uswer outright won
+                    if(CheckIfWin(answer,new string(userResult))){ //check if user outright won
                         gameEnds=true;
                         Console.WriteLine("Your guess is right!");
                         Console.Write("You outright won, and you saved the men:\n");
@@ -172,7 +180,7 @@ class mainCode{
                     }
                 }
             }else{//whole word guess
-                if(CheckIfWin(answer,new string(userInput))){ //check if uswer outright won
+                if(CheckIfWin(answer,new string(userInput))){ //check if user outright won
                     Console.WriteLine("Your guess is right!");
                     Console.WriteLine("You outright won, and you saved the men:\n",hangman[NumOfWrongs]);
                     gameEnds=true;
