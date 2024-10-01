@@ -1,6 +1,9 @@
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8604
+using System;
+using System.Media;
+
 
 
 //namespace CSharpTest;
@@ -18,6 +21,7 @@ class mainCode{
     }
     static int[] Arraycheck(string answer,string usrGuess){
         List<Int32>positions=new List<Int32>();
+            
         positions.Add(-1);
         for(int i=0;i<answer.Length;i++)
         {
@@ -80,6 +84,31 @@ class mainCode{
         }
         Console.WriteLine("");
     }
+
+    static void giveHint(string answer, string[] UserInputs, string[] userResult)
+    {
+        Random rnd=new Random();
+        string[] tempInputs = [];
+        string[] tempResults = [];
+        for (int i = 0; i < UserInputs.Length; i++)
+        {
+            if (answer.Contains(UserInputs[i]))
+            {
+                tempInputs.Append(UserInputs[i]);
+            }
+        }
+
+        for (int i = 0; i < tempInputs.Length; i++)
+        {
+            if (answer.Contains(tempInputs[i]) == false)
+            {
+                tempResults[i] = tempInputs[i];
+            }
+        }
+        int charIndex = rnd.Next(0,tempResults.Length);
+        string hint = tempResults[charIndex];
+        
+    }
     static bool CheckIfDead(int NumOfWrongs){
         if(NumOfWrongs==9){
             return true;
@@ -100,7 +129,31 @@ class mainCode{
         }
         return false;
     }
-    static void losingScreen(){
+    public static void PlayMusic(string filepath)
+    {
+        SoundPlayer musicPlayer = new SoundPlayer();
+        musicPlayer.SoundLocation = filepath;
+        musicPlayer.Play();
+    }
+    static void losingScreen(string correctWord){
+        
+        PlayMusic("clown.wav");
+        
+        Console.WriteLine("oh...");
+        Thread.Sleep(2000);
+        Console.WriteLine("you poor thing...");
+        Thread.Sleep(2000);
+        Console.WriteLine("the word was '"+correctWord+"' silly!");
+        Thread.Sleep(2000);
+        Console.WriteLine("what a shame.");
+        Thread.Sleep(2000);
+        Console.WriteLine("hah..");
+        Thread.Sleep(1200);
+        Console.WriteLine("hahahah....");
+        Thread.Sleep(1200);
+        Console.WriteLine("HAHAHAH........");
+        Thread.Sleep(1300);
+        
         Type type = typeof(ConsoleColor);
         
         int a=1;
@@ -112,13 +165,14 @@ class mainCode{
             
             foreach (var name in Enum.GetNames(type)){
                 Console.BackgroundColor = (ConsoleColor)Enum.Parse(type, name);
-                Console.Write("ha");
+                Console.Write("HA");
             }
         }
     }
-    static void Main(string[] args) // can we remove args?
+    static void Main(string[] args)
         
     {
+        
         string[] keyboard = ["q","w","e","r","t","y","u","i","o","p","a","s","d","f","g","h","j","k","l","z","x","c","v","b","n","m"];
         string []hangman=new string [10];
         hangman[9]="\n--------------------\n|\t\t|\n|\t\t0\n|\t       /|\\ \n|\t       / \\\n";
@@ -133,6 +187,11 @@ class mainCode{
         hangman[0]="\n                    \n \t\t \n \t\t \n \t              \n \t         \n";
 
         Console.WriteLine("Welcome to the game of hangman!");
+        string gameMode = "";
+        // Console.Write("Do you want to play HARD, MEDIUM, or EASY mode? ");
+        // gameMode = Console.ReadLine().ToLower();
+        // ignore for now, unfinished and probably don't have time to sort out
+        
 
         string answer=randomWord();
         while(answer.Length<4){ //get an answer larger than 3 of length
@@ -181,10 +240,12 @@ class mainCode{
             }
             
             //The user inputted the word/letter already
-            if(IsInArray(userInputs,userInput)){
+            if(IsInArray(userInputs,userInput))
+            {
                 Console.WriteLine("Please enter a new value instead of inputting the same");
                 Console.WriteLine("Available letters:");
                 drawKeyboard(WrongAnswers, userInputs, keyboard);
+                continue;
             }
 
             userInputs[InputsCounter]=userInput;
@@ -209,6 +270,9 @@ class mainCode{
 
                     WrongAnswers[WrongAnswersCounter]=userInput;
                     WrongAnswersCounter++;
+                    
+
+                    
                    
                 }else{  //guess letter is right
                     for (int i=0;i<temp.Length;i++){        //change the '_' into a word
@@ -224,15 +288,19 @@ class mainCode{
 
                     if(CheckIfWin(answer,new string(userResult))){ //check if user outright won
                         gameEnds=true;
+                        Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("Your guess is right!");
-                        Console.Write("You outright won, and you saved the men:\n");
-                        Console.WriteLine(hangman[NumOfWrongs]);
+                        Console.Write("You win!\n");
+                        Console.ResetColor();
+                        
                     }
                 }
             }else{//whole word guess
                 if(CheckIfWin(answer,new string(userInput))){ //check if user outright won
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Your guess is right!");
-                    Console.WriteLine("You outright won, and you saved the men:\n",hangman[NumOfWrongs]);
+                    Console.Write("You win!\n");
+                    Console.ResetColor();
                     gameEnds=true;
                 }else{  
                     //whole word guess is wrong
@@ -249,10 +317,7 @@ class mainCode{
             }
             if(CheckIfDead(NumOfWrongs)){
                 gameEnds=true;
-                Console.WriteLine("You lost!");
-                Console.Write("The word is ");
-                Console.WriteLine(answer);
-                losingScreen();
+                losingScreen(answer);
             }
             Console.WriteLine("");
             //output all the wrong answers every loop
